@@ -21,6 +21,7 @@ async function run() {
     await client.connect();
     console.log('database connected');
     const userCollection = client.db("Ghuraghuri").collection("users");
+    const messagesCollection = client.db("Ghuraghuri").collection("messages");
     const hotelBookingCollection = client.db("Ghuraghuri").collection("bookingHotels");
     const reviewCollection = client.db("Ghuraghuri").collection("review");
     
@@ -37,9 +38,27 @@ async function run() {
     app.post("/user", async (req, res) => {
       const requests = req.body;
       const result = await userCollection.insertOne(requests);
-      res.json(result);
+      res.send(result);
+    });
+
+    /* forum section get and post method here  */
+    app.post("/messages", async (req, res) => {
+      const requests = req.body;
+      // console.log(requests)
+      const result = await messagesCollection.insertOne(requests);
+      // console.log(forumResult);
+      res.send(result);
+    });
+
+    app.get("/messages", async (req, res) => {
+      const query = {};
+      const cursor = messagesCollection.find(query);
+      const messages = await cursor.toArray();
+      res.json(messages);
     });
     
+    
+
 
     /* get method for all products data loading in UI  */
     // app.get("/products", async (req, res) => {
