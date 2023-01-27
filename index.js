@@ -112,6 +112,11 @@ async function run() {
     const reviewCollection = client.db("Ghuraghuri").collection("review");
     const specialtourCollection = client.db("Ghuraghuri").collection("specialtour");
     const specialtourBookingDetailsCollection = client.db("Ghuraghuri").collection("SpecialBookingDetails");
+<<<<<<< HEAD
+=======
+    const popularToursCollection = client.db("Ghuraghuri").collection("popularTours");
+    
+>>>>>>> 2b74402e89607f36162f7b246394c475230c34b1
 
 
 
@@ -188,6 +193,7 @@ async function run() {
     });
 
 
+<<<<<<< HEAD
 
     app.put("/SpecialBookingDetails/:id", async (req, res) => {
       const id = req.params.id;
@@ -207,6 +213,15 @@ async function run() {
       res.json(result);
     });
 
+=======
+    
+    app.get("/popularTours", async (req, res) => {
+      const query = {};
+      const cursor = popularToursCollection.find(query);
+      const result = await cursor.toArray();
+      res.json(result);
+    });
+>>>>>>> 2b74402e89607f36162f7b246394c475230c34b1
 
 
     /* get method for all products data loading in UI  */
