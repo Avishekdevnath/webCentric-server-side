@@ -27,6 +27,7 @@ async function run() {
     const reviewCollection = client.db("Ghuraghuri").collection("review");
     const specialtourCollection = client.db("Ghuraghuri").collection("specialtour");
     const specialtourBookingDetailsCollection = client.db("Ghuraghuri").collection("SpecialBookingDetails");
+    const popularToursCollection = client.db("Ghuraghuri").collection("popularTours");
     
 
 
@@ -95,6 +96,12 @@ async function run() {
 
 
     
+    app.get("/popularTours", async (req, res) => {
+      const query = {};
+      const cursor = popularToursCollection.find(query);
+      const result = await cursor.toArray();
+      res.json(result);
+    });
 
 
     /* get method for all products data loading in UI  */
