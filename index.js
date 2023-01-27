@@ -25,6 +25,7 @@ async function run() {
     const hotelBookingCollection = client.db("Ghuraghuri").collection("bookingHotels");
     const reviewCollection = client.db("Ghuraghuri").collection("review");
     const specialtourCollection = client.db("Ghuraghuri").collection("specialtour");
+    const specialtourBookingDetailsCollection = client.db("Ghuraghuri").collection("SpecialBookingDetails");
     
 
 
@@ -63,6 +64,22 @@ async function run() {
     app.get("/specialtour", async (req, res) => {
       const query = {};
       const cursor = specialtourCollection.find(query);
+      const result = await cursor.toArray();
+      res.json(result);
+    });
+
+    /* special booking tour post  and get method here  */
+    app.post("/SpecialBookingDetails", async (req, res) => {
+      const requests = req.body;
+      // console.log(requests)
+      const result = await specialtourBookingDetailsCollection.insertOne(requests);
+      // console.log(forumResult);
+      res.send(result);
+    });
+
+    app.get("/SpecialBookingDetails", async (req, res) => {
+      const query = {};
+      const cursor = specialtourBookingDetailsCollection.find(query);
       const result = await cursor.toArray();
       res.json(result);
     });
