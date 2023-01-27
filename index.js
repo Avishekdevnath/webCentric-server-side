@@ -1,11 +1,12 @@
 const express = require("express");
 const app = express();
+const nodemailer = require('nodemailer');
+const mg = require('nodemailer-sendgrid-transport');
 const cors = require("cors");
 const port = process.env.PORT || 5000;
 const path = require("path");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-
 require("dotenv").config();
 
 //middle ware
@@ -13,8 +14,92 @@ app.use(cors());
 app.use(express.json());
 
 const uri = "mongodb+srv://avinil_it:f2sKbkBlNGbrPf2A@cluster0.iyjwjrz.mongodb.net/?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1,
+const client = new MongoClient(uri, {
+  useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1,
 });
+
+function sendBookingEmail(booking) {
+  const { email, address, name } = booking;
+
+  const auth = {
+      auth: {
+        api_key: process.env.EMAIL_SEND_KEY,
+        // domain: process.env.EMAIL_SEND_DOMAIN
+      }
+    }
+    
+    const transporter = nodemailer.createTransport(mg(auth));
+
+  
+  // let transporter = nodemailer.createTransport({
+  //     host: 'smtp.sendgrid.net',
+  //     port: 587,
+  //     auth: {
+  //         user: "apikey",
+  //         pass: process.env.SENDGRID_API_KEY
+  //     }
+  // });
+    console.log('sending email', email)
+  transporter.sendMail({
+      from: "avishekdevnath@gmail.com", // verified sender email
+      // to: email || 'avinil.it.ltd@gmail.com', // recipient email
+      to:  'avinil.it.ltd@gmail.com', // recipient email
+      subject: `Confirmation Mail`, // Subject line
+      text: "Booking Confirmed", // plain text body
+      html: `
+      <h2> Hi, ${name}
+      <h3>Your Booking is Confirmed</h3>
+      <div>
+          <p>Have a save journey</p>          
+      </div>
+      
+      `, // html body
+  }, function (error, info) {
+      if (error) {
+          console.log('Email send error', error);
+      } else {
+          console.log('Email sent: ' + info);
+      }
+  });
+}
+
+
+let mailTransporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    type: 'OAuth2',
+    user: "avishekdevnath@gmail.com",
+    pass: "*#Shiva-Parvati#*",
+    // clientId: process.env.OAUTH_CLIENTID,
+    // clientSecret: process.env.OAUTH_CLIENT_SECRET,
+    // refreshToken: process.env.OAUTH_REFRESH_TOKEN
+  }
+});
+
+
+let details = {
+  from:"avinil.it.ltd@gmail.com",
+  to:"avishekdevnath@gmail.com",
+  subject:"testing nodemailer",
+  text:"first mail"
+}
+
+mailTransporter.sendMail(details, (err) => {
+  if(err){
+    console.log("Message Not Sent.")
+  }
+  else{
+    console.log("Message Sent.")
+  }
+})
+
+
+
+
+
+
+
+
 
 async function run() {
   try {
@@ -27,8 +112,16 @@ async function run() {
     const reviewCollection = client.db("Ghuraghuri").collection("review");
     const specialtourCollection = client.db("Ghuraghuri").collection("specialtour");
     const specialtourBookingDetailsCollection = client.db("Ghuraghuri").collection("SpecialBookingDetails");
-    
 
+
+
+    app.post("/mail", async (req, res) => {
+      const booking = req.body;
+      console.log(booking)
+      sendBookingEmail(booking)
+      // const result = await userCollection.insertOne(requests);
+      // res.send(result);
+    });
 
 
     // /* Get method for all user data load and  showing ui */
@@ -66,14 +159,15 @@ async function run() {
       const data = await cursor.toArray();
       res.json(data);
     });
-    
-    
+
+
     /* get method for special tour package */
 
     app.get("/specialtour", async (req, res) => {
       const query = {};
       const cursor = specialtourCollection.find(query);
       const result = await cursor.toArray();
+      // console.log(result)
       res.json(result);
     });
 
@@ -94,7 +188,25 @@ async function run() {
     });
 
 
-    
+
+    app.put("/SpecialBookingDetails/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedRequest = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          status: updatedRequest.status,
+        },
+      };
+      const result = await specialtourBookingDetailsCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    });
+
 
 
     /* get method for all products data loading in UI  */
@@ -274,7 +386,6 @@ async function run() {
 
 
 
-  
 
 
 
@@ -282,9 +393,10 @@ async function run() {
 
 
 
-  } 
+
+  }
   finally {
-    
+
   }
 }
 run().catch(console.dir);
