@@ -21,6 +21,7 @@ async function run() {
     await client.connect();
     console.log('database connected');
     const userCollection = client.db("Ghuraghuri").collection("users");
+    const dataCollection = client.db("Ghuraghuri").collection("dataCollection");
     const messagesCollection = client.db("Ghuraghuri").collection("messages");
     const hotelBookingCollection = client.db("Ghuraghuri").collection("bookingHotels");
     const reviewCollection = client.db("Ghuraghuri").collection("review");
@@ -58,6 +59,14 @@ async function run() {
       const messages = await cursor.toArray();
       res.json(messages);
     });
+
+    app.get("/data", async (req, res) => {
+      const query = {};
+      const cursor = dataCollection.find(query);
+      const data = await cursor.toArray();
+      res.json(data);
+    });
+    
     
     /* get method for special tour package */
 
