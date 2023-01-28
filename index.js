@@ -42,13 +42,13 @@ function sendBookingEmail(booking) {
     console.log('sending email', email)
   transporter.sendMail({
       from: "avishekdevnath@gmail.com", // verified sender email
+      // to: email || 'avinil.it.ltd@gmail.com', // recipient email
       to: email || 'avinil.it.ltd@gmail.com', // recipient email
-      // to:  'avinil.it.ltd@gmail.com', // recipient email
       subject: `Confirmation Mail`, // Subject line
       text: "Booking Confirmed", // plain text body
       html: `
-      <h4> Hi, ${name} </h4>
-      <h5>Your Booking is Confirmed</h3>
+      <h2> Hi, ${name}
+      <h3>Your Booking is Confirmed</h3>
       <div>
           <p>Have a save journey</p>          
       </div>
@@ -64,34 +64,34 @@ function sendBookingEmail(booking) {
 }
 
 
-// let mailTransporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     type: 'OAuth2',
-//     user: "avishekdevnath@gmail.com",
-//     pass: "*#Shiva-Parvati#*",
-//     // clientId: process.env.OAUTH_CLIENTID,
-//     // clientSecret: process.env.OAUTH_CLIENT_SECRET,
-//     // refreshToken: process.env.OAUTH_REFRESH_TOKEN
-//   }
-// });
+let mailTransporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    type: 'OAuth2',
+    user: "avishekdevnath@gmail.com",
+    pass: "*#Shiva-Parvati#*",
+    // clientId: process.env.OAUTH_CLIENTID,
+    // clientSecret: process.env.OAUTH_CLIENT_SECRET,
+    // refreshToken: process.env.OAUTH_REFRESH_TOKEN
+  }
+});
 
 
-// let details = {
-//   from:"avinil.it.ltd@gmail.com",
-//   to:"avishekdevnath@gmail.com",
-// //   subject:"testing nodemailer",
-// //   text:"first mail"
-// // }
+let details = {
+  from:"avinil.it.ltd@gmail.com",
+  to:"avishekdevnath@gmail.com",
+  subject:"testing nodemailer",
+  text:"first mail"
+}
 
-// mailTransporter.sendMail(details, (err) => {
-//   if(err){
-//     console.log("Message Not Sent.")
-//   }
-//   else{
-//     console.log("Message Sent.")
-//   }
-// })
+mailTransporter.sendMail(details, (err) => {
+  if(err){
+    console.log("Message Not Sent.")
+  }
+  else{
+    console.log("Message Sent.")
+  }
+})
 
 
 
@@ -112,8 +112,6 @@ async function run() {
     const reviewCollection = client.db("Ghuraghuri").collection("review");
     const specialtourCollection = client.db("Ghuraghuri").collection("specialtour");
     const specialtourBookingDetailsCollection = client.db("Ghuraghuri").collection("SpecialBookingDetails");
-    const popularToursCollection = client.db("Ghuraghuri").collection("popularTours");
-    
 
 
 
@@ -209,13 +207,6 @@ async function run() {
       res.json(result);
     });
 
-    
-    app.get("/popularTours", async (req, res) => {
-      const query = {};
-      const cursor = popularToursCollection.find(query);
-      const result = await cursor.toArray();
-      res.json(result);
-    });
 
 
     /* get method for all products data loading in UI  */
