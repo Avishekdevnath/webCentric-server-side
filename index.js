@@ -112,6 +112,9 @@ async function run() {
     const reviewCollection = client.db("Ghuraghuri").collection("review");
     const specialtourCollection = client.db("Ghuraghuri").collection("specialtour");
     const specialtourBookingDetailsCollection = client.db("Ghuraghuri").collection("SpecialBookingDetails");
+    const popularToursCollection = client.db("Ghuraghuri").collection("popularTours");
+    const bookingTopPlacesCollection = client.db("Ghuraghuri").collection("bookingTopPlaces");
+    
 
 
 
@@ -208,6 +211,32 @@ async function run() {
     });
 
 
+
+
+        //  single data finding for showing
+        app.get("/explorePlace/:id", async (req, res) => {
+          const id = req.params.id;
+          const query = { _id: ObjectId(id) };
+          const product = await popularToursCollection.findOne(query);
+          res.send(product);
+        });
+
+
+        app.post("/bookingTopPlaces", async (req, res) => {
+          const requests = req.body;
+          // console.log(requests)
+          const result = await bookingTopPlacesCollection.insertOne(requests);
+          // console.log(forumResult);
+          res.send(result);
+        });
+
+
+        app.get("/bookingTopPlaces", async (req, res) => {
+          const query = {};
+          const cursor = bookingTopPlacesCollection.find(query);
+          const result = await cursor.toArray();
+          res.json(result);
+        });
 
     /* get method for all products data loading in UI  */
     // app.get("/products", async (req, res) => {
